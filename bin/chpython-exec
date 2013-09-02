@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+source "${0%/*}/../share/chpython/chpython.sh"
+
+case "$1" in
+	-h|--help)
+		echo "usage: chpython-exec PYTHON [PYTHONOPTS] -- COMMAND"
+		exit
+		;;
+	-V|--version)
+		echo "chpython version $CHPYTHON_VERSION"
+		exit
+		;;
+esac
+
+if (( $# == 0 )); then
+	echo "chpython-exec: PYTHON and COMMAND required" >&2
+	exit 1
+fi
+
+argv=()
+
+for arg in $@; do
+	shift
+
+	if [[ "$arg" == "--" ]]; then break
+	else                          argv+=($arg)
+	fi
+done
+
+if (( $# == 0 )); then
+	echo "chpython-exec: COMMAND required" >&2
+	exit 1
+fi
+
+exec "$SHELL" -i -l -c "chpython $argv && $*"
